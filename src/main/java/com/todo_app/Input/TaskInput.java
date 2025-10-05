@@ -1,5 +1,6 @@
 package com.todo_app.Input;
 
+import com.todo_app.Enum.CategoryType;
 import com.todo_app.Enum.State;
 
 import java.time.LocalDateTime;
@@ -11,8 +12,10 @@ public class TaskInput {
     private LocalDateTime final_date;
     private String priority;
     private Long userId;
-    private Long categoryId;
+    private CategoryType category = CategoryType.General; // enum categoría con valor por defecto
     private State state;
+
+    // Getters y setters
 
     public String getTask_name() {
         return task_name;
@@ -62,12 +65,12 @@ public class TaskInput {
         this.userId = userId;
     }
 
-    public Long getCategoryId() {
-        return categoryId;
+    public CategoryType getCategory() {
+        return category;
     }
 
-    public void setCategoryId(Long categoryId) {
-        this.categoryId = categoryId;
+    public void setCategory(CategoryType category) {
+        this.category = category;
     }
 
     public State getState() {

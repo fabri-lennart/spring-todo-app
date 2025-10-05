@@ -26,11 +26,9 @@ public class User {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
-    private List<Category> categories;
-
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference
     private List<Task> tasks;
+
+    // Getters y setters
 
     public Long getId() {
         return id;
@@ -70,14 +68,6 @@ public class User {
 
     public void setFecha_registro(LocalDate fecha_registro) {
         this.fecha_registro = fecha_registro;
-    }
-
-    public List<Category> getCategories() {
-        return categories;
-    }
-
-    public void setCategories(List<Category> categories) {
-        this.categories = categories;
     }
 
     public List<Task> getTasks() {

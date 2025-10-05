@@ -1,16 +1,13 @@
 package com.todo_app.Service;
 
+import com.todo_app.Enum.CategoryType;
 import com.todo_app.Input.TaskInput;
-import com.todo_app.Model.Category;
 import com.todo_app.Model.Task;
 import com.todo_app.Model.User;
-import com.todo_app.Repository.CategoryRepository;
 import com.todo_app.Repository.TaskRepository;
 import com.todo_app.Repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
 
 @Service
 public class TaskService {
@@ -20,9 +17,6 @@ public class TaskService {
 
     @Autowired
     private UserRepository userRepository;
-
-    @Autowired
-    private CategoryRepository categoryRepository;
 
     public Task create(TaskInput input) {
         Task task = new Task();
@@ -38,9 +32,8 @@ public class TaskService {
                 .orElseThrow(() -> new IllegalArgumentException("User not found with id " + input.getUserId()));
         task.setUser(user);
 
-        // Buscar la categoría por ID
-        Category category = categoryRepository.findById(input.getCategoryId())
-                .orElseThrow(() -> new IllegalArgumentException("Category not found with id " + input.getCategoryId()));
+        // Asignar la categoría directamente desde el enum, con valor por defecto General si es null
+        CategoryType category = input.getCategory() != null ? input.getCategory() : CategoryType.General;
         task.setCategory(category);
 
         return taskRepository.save(task);

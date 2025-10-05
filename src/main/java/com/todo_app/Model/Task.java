@@ -1,12 +1,14 @@
 package com.todo_app.Model;
 
+import com.todo_app.Enum.CategoryType;
 import com.todo_app.Enum.State;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
+
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name="tasks")
+@Table(name = "tasks")
 public class Task {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,13 +34,14 @@ public class Task {
     @JsonBackReference
     private User user;
 
-    @ManyToOne
-    @JoinColumn(name = "category_id")
-    @JsonBackReference
-    private Category category;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private CategoryType category = CategoryType.General;
 
     @Enumerated(EnumType.STRING)
     private State state = State.Pending;
+
+    // Getters y setters
 
     public Long getId() {
         return id;
@@ -96,11 +99,11 @@ public class Task {
         this.user = user;
     }
 
-    public Category getCategory() {
+    public CategoryType getCategory() {
         return category;
     }
 
-    public void setCategory(Category category) {
+    public void setCategory(CategoryType category) {
         this.category = category;
     }
 

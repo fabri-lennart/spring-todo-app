@@ -1,6 +1,5 @@
 package com.todo_app.Controller;
 
-import com.todo_app.Input.CategoryInput;
 import com.todo_app.Input.UserInput;
 import com.todo_app.Model.User;
 import com.todo_app.Service.UserService;

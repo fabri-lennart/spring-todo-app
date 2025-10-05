@@ -20,8 +20,10 @@ public class TaskController {
         try {
             Task task = taskService.create(input);
             return new ResponseEntity<>(task, HttpStatus.CREATED);
+        } catch (IllegalArgumentException e) {
+            // Error en caso de usuario no encontrado o categoría inválida
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
-            e.printStackTrace();
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
