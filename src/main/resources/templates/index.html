@@ -1,10 +1,59 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Dashboard de Tareas</title>
+    <script src="https://unpkg.com/htmx.org@1.9.5"></script>
+    <style>
+        .row { display: flex; flex-direction: row; margin-bottom: 10px; gap: 10px; }
+        .col { flex: 1; }
+        .task-list { margin-top: 20px; }
+        input, select, button { padding: 5px; }
+    </style>
 </head>
 <body>
+
+<h1>Dashboard de Tareas</h1>
+
+<!-- Crear nueva tarea -->
+<div class="row">
+    <div class="col">
+        <h3>Nueva Tarea</h3>
+        <div id="task-form" hx-get="/tasks/form" hx-trigger="load" hx-swap="innerHTML"></div>
+    </div>
+</div>
+
+<!-- Buscar / filtrar tareas -->
+<div class="row">
+    <div class="col">
+        <h3>Buscar tareas</h3>
+        <form hx-get="/tasks/list" hx-target="#task-list" hx-swap="innerHTML">
+            <label>Categoría:</label>
+            <select name="category">
+                <option value="">Todas las categorías</option>
+                <option th:each="cat : ${T(com.todo_app.Enum.CategoryType).values()}"
+                        th:value="${cat}"
+                        th:text="${cat}"></option>
+            </select>
+
+            <label>Estado:</label>
+            <select name="state">
+                <option value="">Todos los estados</option>
+                <option th:each="st : ${T(com.todo_app.Enum.State).values()}"
+                        th:value="${st}"
+                        th:text="${st}"></option>
+            </select>
+
+            <label>Nombre:</label>
+            <input type="text" name="taskName" placeholder="Buscar por nombre"/>
+
+            <button type="submit">Buscar</button>
+        </form>
+    </div>
+</div>
+
+<!-- Lista de tareas -->
+<div class="task-list" id="task-list" hx-get="/tasks/list" hx-trigger="load" hx-swap="innerHTML"></div>
 
 </body>
 </html>

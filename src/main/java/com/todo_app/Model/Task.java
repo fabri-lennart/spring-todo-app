@@ -4,27 +4,27 @@ import com.todo_app.Enum.CategoryType;
 import com.todo_app.Enum.State;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
-
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "tasks")
 public class Task {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, length = 150)
-    private String task_name;
+    @Column(name = "task_name", nullable = false, length = 150)
+    private String taskName;
 
     @Column(nullable = false, length = 150)
     private String description;
 
-    @Column(nullable = false)
-    private LocalDateTime created_date;
+    @Column(name = "created_date", nullable = false)
+    private LocalDateTime createdDate;
 
-    @Column(nullable = false)
-    private LocalDateTime final_date;
+    @Column(name = "final_date", nullable = false)
+    private LocalDateTime finalDate;
 
     @Column(nullable = false, length = 150)
     private String priority;
@@ -41,7 +41,7 @@ public class Task {
     @Enumerated(EnumType.STRING)
     private State state = State.Pending;
 
-    // Getters y setters
+    // === Getters y Setters ===
 
     public Long getId() {
         return id;
@@ -51,12 +51,12 @@ public class Task {
         this.id = id;
     }
 
-    public String getTask_name() {
-        return task_name;
+    public String getTaskName() {
+        return taskName;
     }
 
-    public void setTask_name(String task_name) {
-        this.task_name = task_name;
+    public void setTaskName(String taskName) {
+        this.taskName = taskName;
     }
 
     public String getDescription() {
@@ -67,20 +67,20 @@ public class Task {
         this.description = description;
     }
 
-    public LocalDateTime getCreated_date() {
-        return created_date;
+    public LocalDateTime getCreatedDate() {
+        return createdDate;
     }
 
-    public void setCreated_date(LocalDateTime created_date) {
-        this.created_date = created_date;
+    public void setCreatedDate(LocalDateTime createdDate) {
+        this.createdDate = createdDate;
     }
 
-    public LocalDateTime getFinal_date() {
-        return final_date;
+    public LocalDateTime getFinalDate() {
+        return finalDate;
     }
 
-    public void setFinal_date(LocalDateTime final_date) {
-        this.final_date = final_date;
+    public void setFinalDate(LocalDateTime finalDate) {
+        this.finalDate = finalDate;
     }
 
     public String getPriority() {

@@ -1,10 +1,19 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+<div th:fragment="task-list">
+    <h3>Lista de Tareas</h3>
+    <ul>
+        <li th:each="task : ${tasks}">
+            <strong th:text="${task.taskName}">Nombre</strong> |
+            <span th:text="${task.description}">Descripción</span> |
+            <span th:text="${task.priority}">Prioridad</span> |
+            <span th:text="${task.category}">Categoría</span> |
+            <span th:text="${task.state}">Estado</span> |
+            <span th:text="${task.finalDate}">Fecha final</span> |
+            <span th:text="${task.user.name} + ' ' + ${task.user.lastname}">Usuario</span>
 
-</body>
-</html>
+            <button hx-get="/tasks/form?id=[[${task.id}]]" hx-target="#task-form" hx-swap="innerHTML">
+                Editar
+            </button>
+        </li>
+        <li th:if="${#lists.isEmpty(tasks)}">No hay tareas disponibles</li>
+    </ul>
+</div>

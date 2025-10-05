@@ -1,0 +1,46 @@
+<!-- src/main/resources/templates/fragments/task-form.html -->
+<div th:fragment="task-form">
+  <form hx-post="/tasks/save" hx-target="#task-list" hx-swap="innerHTML">
+    <div>
+      <label>Nombre de Tarea:</label>
+      <input type="text" name="taskName" placeholder="Nombre de tarea" required />
+    </div>
+    <div>
+      <label>Descripción:</label>
+      <input type="text" name="description" placeholder="Descripción" required />
+    </div>
+    <div>
+      <label>Prioridad:</label>
+      <input type="text" name="priority" placeholder="Prioridad" />
+    </div>
+    <div>
+      <label>Fecha de creación:</label>
+      <input type="datetime-local" name="createdDate" required />
+    </div>
+    <div>
+      <label>Fecha final:</label>
+      <input type="datetime-local" name="finalDate" required />
+    </div>
+    <div>
+      <label>Categoría:</label>
+      <select name="category">
+        <option value="General">General</option>
+        <option value="Universidad">Universidad</option>
+        <option value="Trabajo">Trabajo</option>
+        <option value="Hogar">Hogar</option>
+        <option value="Salud">Salud</option>
+        <option value="Tiempo_Libre">Tiempo Libre</option>
+      </select>
+    </div>
+    <div>
+      <label>Estado:</label>
+      <select name="state">
+        <option value="Pending">Pending</option>
+        <option value="Start">Start</option>
+        <option value="In_Process">In_Process</option>
+        <option value="Finished">Finished</option>
+      </select>
+    </div>
+    <button type="submit">Guardar Tarea</button>
+  </form>
+</div>
