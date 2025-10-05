@@ -1,52 +1,18 @@
-package com.todo_app.Model;
+package com.todo_app.Input;
 
 import com.todo_app.Enum.State;
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import jakarta.persistence.*;
+
 import java.time.LocalDateTime;
 
-@Entity
-@Table(name="tasks")
-public class Task {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @Column(nullable = false, length = 150)
+public class TaskInput {
     private String task_name;
-
-    @Column(nullable = false, length = 150)
     private String description;
-
-    @Column(nullable = false)
     private LocalDateTime created_date;
-
-    @Column(nullable = false)
     private LocalDateTime final_date;
-
-    @Column(nullable = false, length = 150)
     private String priority;
-
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    @JsonBackReference
-    private User user;
-
-    @ManyToOne
-    @JoinColumn(name = "category_id")
-    @JsonBackReference
-    private Category category;
-
-    @Enumerated(EnumType.STRING)
-    private State state = State.Pending;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
+    private Long userId;
+    private Long categoryId;
+    private State state;
 
     public String getTask_name() {
         return task_name;
@@ -88,20 +54,20 @@ public class Task {
         this.priority = priority;
     }
 
-    public User getUser() {
-        return user;
+    public Long getUserId() {
+        return userId;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setUserId(Long userId) {
+        this.userId = userId;
     }
 
-    public Category getCategory() {
-        return category;
+    public Long getCategoryId() {
+        return categoryId;
     }
 
-    public void setCategory(Category category) {
-        this.category = category;
+    public void setCategoryId(Long categoryId) {
+        this.categoryId = categoryId;
     }
 
     public State getState() {

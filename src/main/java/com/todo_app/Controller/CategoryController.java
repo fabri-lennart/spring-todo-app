@@ -1,7 +1,7 @@
-package Controller;
+package com.todo_app.Controller;
 
-import Input.CategoryInput;
-import Service.CategoryService;
+import com.todo_app.Input.CategoryInput;
+import com.todo_app.Service.CategoryService;
 import com.todo_app.Model.Category;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
