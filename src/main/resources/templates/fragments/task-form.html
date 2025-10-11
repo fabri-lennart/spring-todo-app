@@ -1,46 +1,65 @@
 <!-- src/main/resources/templates/fragments/task-form.html -->
 <div th:fragment="task-form">
-  <form hx-post="/tasks/save" hx-target="#task-list" hx-swap="innerHTML">
-    <div>
-      <label>Nombre de Tarea:</label>
-      <input type="text" name="taskName" placeholder="Nombre de tarea" required />
-    </div>
-    <div>
-      <label>Descripción:</label>
-      <input type="text" name="description" placeholder="Descripción" required />
-    </div>
-    <div>
-      <label>Prioridad:</label>
-      <input type="text" name="priority" placeholder="Prioridad" />
-    </div>
-    <div>
-      <label>Fecha de creación:</label>
-      <input type="datetime-local" name="createdDate" required />
-    </div>
-    <div>
-      <label>Fecha final:</label>
-      <input type="datetime-local" name="finalDate" required />
-    </div>
-    <div>
-      <label>Categoría:</label>
-      <select name="category">
-        <option value="General">General</option>
-        <option value="Universidad">Universidad</option>
-        <option value="Trabajo">Trabajo</option>
-        <option value="Hogar">Hogar</option>
-        <option value="Salud">Salud</option>
-        <option value="Tiempo_Libre">Tiempo Libre</option>
-      </select>
-    </div>
-    <div>
-      <label>Estado:</label>
-      <select name="state">
-        <option value="Pending">Pending</option>
-        <option value="Start">Start</option>
-        <option value="In_Process">In_Process</option>
-        <option value="Finished">Finished</option>
-      </select>
-    </div>
-    <button type="submit">Guardar Tarea</button>
-  </form>
+  <div class="edit-form-container">
+    <h3>✏️ Editando Tarea: <span th:text="${task.taskName}"></span></h3>
+
+    <form th:object="${task}" hx-post="/tasks/save" hx-target="#task-list" hx-swap="innerHTML">
+      <input type="hidden" name="id" th:value="${task.id}" />
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+        <div>
+          <label>Nombre de Tarea:</label>
+          <input type="text" name="taskName" th:value="${task.taskName}" required />
+        </div>
+
+        <div>
+          <label>Descripción:</label>
+          <input type="text" name="description" th:value="${task.description}" required />
+        </div>
+
+        <div>
+          <label>Prioridad:</label>
+          <input type="number" name="priority" th:value="${task.priority}" min="1" max="10" required />
+        </div>
+
+        <div>
+          <label>Fecha Final:</label>
+          <input type="datetime-local" name="finalDate"
+                 th:value="${task.finalDate != null} ? ${#temporals.format(task.finalDate, 'yyyy-MM-dd\'T\'HH:mm')} : ''"
+                 required />
+        </div>
+
+        <div>
+          <label>Categoría:</label>
+          <select name="category" required>
+            <option th:each="cat : ${T(com.todo_app.Enum.CategoryType).values()}"
+                    th:value="${cat}"
+                    th:text="${cat}"
+                    th:selected="${task.category == cat}">
+            </option>
+          </select>
+        </div>
+
+        <div>
+          <label>Estado:</label>
+          <select name="state" required>
+            <option th:each="st : ${T(com.todo_app.Enum.State).values()}"
+                    th:value="${st}"
+                    th:text="${st}"
+                    th:selected="${task.state == st}">
+            </option>
+          </select>
+        </div>
+      </div>
+
+      <div class="button-group">
+        <button type="submit" style="background-color: #007bff;">
+          💾 Guardar Cambios
+        </button>
+        <button type="button" onclick="cancelEdit()" style="background-color: #6c757d;">
+          ❌ Cancelar Edición
+        </button>
+      </div>
+    </form>
+  </div>
 </div>

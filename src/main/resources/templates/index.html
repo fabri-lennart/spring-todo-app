@@ -5,55 +5,383 @@
     <title>Dashboard de Tareas</title>
     <script src="https://unpkg.com/htmx.org@1.9.5"></script>
     <style>
-        .row { display: flex; flex-direction: row; margin-bottom: 10px; gap: 10px; }
-        .col { flex: 1; }
-        .task-list { margin-top: 20px; }
-        input, select, button { padding: 5px; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+
+        h1, h2, h3 {
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .row {
+            display: flex;
+            flex-direction: row;
+            margin-bottom: 20px;
+            gap: 20px;
+        }
+
+        .col {
+            flex: 1;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .task-list {
+            margin-top: 20px;
+        }
+
+        input, select, button {
+            padding: 8px 12px;
+            margin: 5px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .btn-edit {
+            background-color: #28a745;
+        }
+
+        .btn-edit:hover {
+            background-color: #1e7e34;
+        }
+
+        .btn-delete {
+            background-color: #dc3545;
+        }
+
+        .btn-delete:hover {
+            background-color: #c82333;
+        }
+
+        .btn-cancel {
+            background-color: #6c757d;
+        }
+
+        .btn-cancel:hover {
+            background-color: #545b62;
+        }
+
+        .task-item {
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 6px;
+            background: white;
+        }
+
+        .task-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .task-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .task-actions button, .task-actions select {
+            width: auto;
+            padding: 5px 10px;
+        }
+
+        .state-Pending { color: #ffc107; font-weight: bold; }
+        .state-Start { color: #17a2b8; font-weight: bold; }
+        .state-In_Process { color: #007bff; font-weight: bold; }
+        .state-Finished { color: #28a745; font-weight: bold; }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .button-group button {
+            width: auto;
+        }
+
+        .no-tasks {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
+
+        form > div {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+
+        .task-meta {
+            font-size: 0.9em;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .priority {
+            background: #e9ecef;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.8em;
+        }
+
+        .category {
+            background: #d1ecf1;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.8em;
+        }
+
+        .search-form {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr auto;
+            gap: 10px;
+            align-items: end;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            margin-bottom: 5px;
+        }
+
+        .create-task-form {
+            border: 2px solid #e9ecef;
+            padding: 20px;
+            border-radius: 8px;
+            background: #f8f9fa;
+        }
+
+        .edit-form-container {
+            border: 2px dashed #007bff;
+            padding: 20px;
+            border-radius: 8px;
+            background: #f0f8ff;
+            margin-bottom: 20px;
+        }
     </style>
 </head>
 <body>
 
 <h1>Dashboard de Tareas</h1>
 
-<!-- Crear nueva tarea -->
-<div class="row">
+<!-- CONTENEDOR PARA FORMULARIO DE EDICIÓN -->
+<div id="edit-form-container"></div>
+
+<!-- CREAR NUEVA TAREA - FORMULARIO VISIBLE -->
+<div class="row" id="create-task-section">
     <div class="col">
-        <h3>Nueva Tarea</h3>
-        <div id="task-form" hx-get="/tasks/form" hx-trigger="load" hx-swap="innerHTML"></div>
+        <h3>➕ Crear Nueva Tarea</h3>
+        <div class="create-task-form">
+            <form th:action="@{/tasks/save}" method="post" hx-post="/tasks/save" hx-target="#task-list" hx-swap="innerHTML">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div>
+                        <label>Nombre de Tarea:</label>
+                        <input type="text" name="taskName" placeholder="Nombre de tarea" required />
+                    </div>
+
+                    <div>
+                        <label>Descripción:</label>
+                        <input type="text" name="description" placeholder="Descripción" required />
+                    </div>
+
+                    <div>
+                        <label>Prioridad (1-10):</label>
+                        <input type="number" name="priority" value="5" min="1" max="10" required />
+                    </div>
+
+                    <div>
+                        <label>Fecha Final:</label>
+                        <input type="datetime-local" name="finalDate" required />
+                    </div>
+
+                    <div>
+                        <label>Categoría:</label>
+                        <select name="category" required>
+                            <option th:each="cat : ${T(com.todo_app.Enum.CategoryType).values()}"
+                                    th:value="${cat}"
+                                    th:text="${cat}">
+                            </option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label>Estado:</label>
+                        <select name="state" required>
+                            <option th:each="st : ${T(com.todo_app.Enum.State).values()}"
+                                    th:value="${st}"
+                                    th:text="${st}">
+                            </option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Fecha de creación se generará automáticamente en el backend -->
+                <input type="hidden" name="createdDate" id="createdDate" />
+
+                <div class="button-group">
+                    <button type="submit" style="background-color: #28a745;">
+                        ✅ Crear Tarea
+                    </button>
+                    <button type="reset" style="background-color: #6c757d;">
+                        🔄 Limpiar Formulario
+                    </button>
+                </div>
+            </form>
+        </div>
     </div>
 </div>
 
-<!-- Buscar / filtrar tareas -->
+<!-- BUSCAR / FILTRAR TAREAS -->
 <div class="row">
     <div class="col">
-        <h3>Buscar tareas</h3>
-        <form hx-get="/tasks/list" hx-target="#task-list" hx-swap="innerHTML">
-            <label>Categoría:</label>
-            <select name="category">
-                <option value="">Todas las categorías</option>
-                <option th:each="cat : ${T(com.todo_app.Enum.CategoryType).values()}"
-                        th:value="${cat}"
-                        th:text="${cat}"></option>
-            </select>
+        <h3>🔍 Buscar Tareas</h3>
+        <form hx-get="/tasks/search" hx-target="#task-list" hx-swap="innerHTML" class="search-form">
+            <div class="form-group">
+                <label>Nombre:</label>
+                <input type="text" name="name" placeholder="Buscar por nombre"/>
+            </div>
 
-            <label>Estado:</label>
-            <select name="state">
-                <option value="">Todos los estados</option>
-                <option th:each="st : ${T(com.todo_app.Enum.State).values()}"
-                        th:value="${st}"
-                        th:text="${st}"></option>
-            </select>
+            <div class="form-group">
+                <label>Categoría:</label>
+                <select name="category">
+                    <option value="">Todas las categorías</option>
+                    <option th:each="cat : ${T(com.todo_app.Enum.CategoryType).values()}"
+                            th:value="${cat}"
+                            th:text="${cat}"></option>
+                </select>
+            </div>
 
-            <label>Nombre:</label>
-            <input type="text" name="taskName" placeholder="Buscar por nombre"/>
+            <div class="form-group">
+                <label>Estado:</label>
+                <select name="state">
+                    <option value="">Todos los estados</option>
+                    <option th:each="st : ${T(com.todo_app.Enum.State).values()}"
+                            th:value="${st}"
+                            th:text="${st}"></option>
+                </select>
+            </div>
 
-            <button type="submit">Buscar</button>
+            <div class="form-group">
+                <button type="submit">🔍 Buscar</button>
+                <button type="button" onclick="clearSearch()" style="margin-top: 5px; background-color: #6c757d;">
+                    🗑️ Limpiar Filtros
+                </button>
+            </div>
         </form>
     </div>
 </div>
 
-<!-- Lista de tareas -->
-<div class="task-list" id="task-list" hx-get="/tasks/list" hx-trigger="load" hx-swap="innerHTML"></div>
+<!-- LISTA DE TAREAS -->
+<div class="row">
+    <div class="col">
+        <div class="task-list" id="task-list" hx-get="/tasks/list" hx-trigger="load" hx-swap="innerHTML"></div>
+    </div>
+</div>
+
+<script>
+    // Función para limpiar búsqueda
+    function clearSearch() {
+        document.querySelector('form[hx-get="/tasks/search"]').reset();
+        htmx.trigger('#task-list', 'load');
+    }
+
+    // Función para editar tarea
+    function editTask(taskId) {
+        // Ocultar formulario de creación
+        document.getElementById('create-task-section').style.display = 'none';
+
+        // Cargar formulario de edición
+        htmx.ajax('GET', '/tasks/form?id=' + taskId, {
+            target: '#edit-form-container',
+            swap: 'innerHTML'
+        });
+    }
+
+    // Función para cancelar edición
+    function cancelEdit() {
+        // Mostrar formulario de creación
+        document.getElementById('create-task-section').style.display = 'flex';
+
+        // Limpiar contenedor de edición
+        document.getElementById('edit-form-container').innerHTML = '';
+
+        // Recargar lista
+        htmx.trigger('#task-list', 'load');
+    }
+
+    // Función para actualizar estado
+    function updateTaskState(selectElement) {
+        const taskId = selectElement.getAttribute('data-task-id');
+        const newState = selectElement.value;
+
+        htmx.ajax('PUT', '/tasks/update-state/' + taskId, {
+            values: { state: newState },
+            target: '#task-list',
+            swap: 'innerHTML'
+        });
+    }
+
+    // Establecer fecha mínima para el campo de fecha final (hoy)
+    document.addEventListener('DOMContentLoaded', function() {
+        const now = new Date();
+        now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+        const finalDateInput = document.querySelector('input[name="finalDate"]');
+        if (finalDateInput) {
+            finalDateInput.min = now.toISOString().slice(0, 16);
+        }
+
+        // Establecer fecha de creación actual
+        const createdDateInput = document.getElementById('createdDate');
+        if (createdDateInput) {
+            createdDateInput.value = now.toISOString().slice(0, 16);
+        }
+    });
+
+    // Recargar lista después de guardar
+    document.body.addEventListener('htmx:afterOnLoad', function(evt) {
+        if (evt.detail.target.id === 'task-list') {
+            // Si se guardó una tarea, mostrar nuevamente el formulario de creación
+            document.getElementById('create-task-section').style.display = 'flex';
+            document.getElementById('edit-form-container').innerHTML = '';
+        }
+    });
+</script>
 
 </body>
 </html>

@@ -8,12 +8,15 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
 @Controller
 @RequestMapping("/tasks")
 public class TaskController {
 
     private final TaskService taskService;
-    private final UserService userService; // Para asignar un usuario a la tarea
+    private final UserService userService;
 
     public TaskController(TaskService taskService, UserService userService) {
         this.taskService = taskService;
@@ -29,10 +32,10 @@ public class TaskController {
         if (id != null) {
             task = taskService.findById(id);
             if (task == null) {
-                task = new Task(); // si no existe, crear uno nuevo
+                task = new Task();
             }
         } else {
-            task = new Task(); // nuevo
+            task = new Task();
         }
         model.addAttribute("task", task);
         return "fragments/task-form :: task-form";
@@ -43,15 +46,23 @@ public class TaskController {
     // ==========================
     @PostMapping("/save")
     public String saveTask(@ModelAttribute("task") Task task, Model model) {
-        // Si no se asigna usuario desde login, podemos usar un usuario fijo
+        // Si es una nueva tarea (sin ID), establecer fecha de creación
+        if (task.getId() == null) {
+            task.setCreatedDate(LocalDateTime.now());
+        } else {
+            // Si es edición, mantener la fecha de creación original
+            Task existingTask = taskService.findById(task.getId());
+            if (existingTask != null) {
+                task.setCreatedDate(existingTask.getCreatedDate());
+            }
+        }
+
         if (task.getUser() == null) {
-            User user = userService.findById(1L); // usuario por defecto
+            User user = userService.findById(1L);
             task.setUser(user);
         }
 
         taskService.save(task);
-
-        // Actualizar la lista de tareas para HTMX
         model.addAttribute("tasks", taskService.findAll());
         return "fragments/task-list :: task-list";
     }
@@ -66,15 +77,40 @@ public class TaskController {
     }
 
     // ==========================
-    // Buscar tareas (opcional)
+    // Buscar tareas
     // ==========================
     @GetMapping("/search")
     public String searchTasks(@RequestParam(required = false) String name,
                               @RequestParam(required = false) String category,
                               @RequestParam(required = false) String state,
                               Model model) {
-
         model.addAttribute("tasks", taskService.search(name, category, state));
+        return "fragments/task-list :: task-list";
+    }
+
+    // ==========================
+    // ELIMINAR TAREA
+    // ==========================
+    @DeleteMapping("/delete/{id}")
+    public String deleteTask(@PathVariable Long id, Model model) {
+        taskService.deleteById(id);
+        model.addAttribute("tasks", taskService.findAll());
+        return "fragments/task-list :: task-list";
+    }
+
+    // ==========================
+    // ACTUALIZAR ESTADO
+    // ==========================
+    @PutMapping("/update-state/{id}")
+    public String updateTaskState(@PathVariable Long id,
+                                  @RequestParam String state,
+                                  Model model) {
+        Task task = taskService.findById(id);
+        if (task != null) {
+            task.setState(com.todo_app.Enum.State.valueOf(state));
+            taskService.save(task);
+        }
+        model.addAttribute("tasks", taskService.findAll());
         return "fragments/task-list :: task-list";
     }
 }

@@ -30,16 +30,17 @@ public class TaskService {
         return taskRepository.findAll();
     }
 
-    // ==========================
+    // ELIMINAR por ID - MÉTODO NUEVO
+    public void deleteById(Long id) {
+        taskRepository.deleteById(id);
+    }
+
     // Método de búsqueda
-    // ==========================
     public List<Task> search(String name, String category, String state) {
-        // Ajustar valores vacíos a null
         if (name != null && name.isBlank()) name = null;
         if (category != null && category.isBlank()) category = null;
         if (state != null && state.isBlank()) state = null;
 
-        // Aquí usamos el repositorio para filtrar
         return taskRepository.findByFilters(name, category, state);
     }
 }
