@@ -1,5 +1,5 @@
 <!-- src/main/resources/templates/fragments/task-list.html -->
-<div th:fragment="task-list">
+<divt th:fragment="task-list">
     <h3>📋 Lista de Tareas <span th:text="'(' + ${tasks.size()} + ')'" style="font-size: 0.8em; color: #666;"></span></h3>
 
     <div th:if="${#lists.isEmpty(tasks)}" class="no-tasks">
@@ -59,4 +59,4 @@
             </div>
         </div>
     </div>
-</div>
+</divt>
