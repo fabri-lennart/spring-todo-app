@@ -271,7 +271,7 @@
 <div class="row">
     <div class="col">
         <h3>🔍 Buscar Tareas</h3>
-        <form hx-get="/tasks/search" hx-target="#task-list" hx-swap="innerHTML" class="search-form">
+        <form hx-get="/tasks/search" hx-target="#search-results" hx-swap="innerHTML" class="search-form">
             <div class="form-group">
                 <label>Nombre:</label>
                 <input type="text" name="name" placeholder="Buscar por nombre"/>
@@ -304,6 +304,9 @@
                 </button>
             </div>
         </form>
+
+        <!-- CONTENEDOR PARA RESULTADOS DE BÚSQUEDA -->
+        <div id="search-results"></div>
     </div>
 </div>
 
@@ -318,15 +321,15 @@
     // Función para limpiar búsqueda
     function clearSearch() {
         document.querySelector('form[hx-get="/tasks/search"]').reset();
+        document.getElementById('search-results').innerHTML = '';
         htmx.trigger('#task-list', 'load');
     }
 
     // Función para editar tarea
     function editTask(taskId) {
-        // Ocultar formulario de creación
         document.getElementById('create-task-section').style.display = 'none';
+        document.getElementById('search-results').innerHTML = '';
 
-        // Cargar formulario de edición
         htmx.ajax('GET', '/tasks/form?id=' + taskId, {
             target: '#edit-form-container',
             swap: 'innerHTML'
@@ -335,13 +338,8 @@
 
     // Función para cancelar edición
     function cancelEdit() {
-        // Mostrar formulario de creación
         document.getElementById('create-task-section').style.display = 'flex';
-
-        // Limpiar contenedor de edición
         document.getElementById('edit-form-container').innerHTML = '';
-
-        // Recargar lista
         htmx.trigger('#task-list', 'load');
     }
 
@@ -357,6 +355,14 @@
         });
     }
 
+    // Función para limpiar resultados de búsqueda cuando se elimina una tarea
+    function clearSearchResults() {
+        setTimeout(() => {
+            document.getElementById('search-results').innerHTML = '';
+            htmx.trigger('#task-list', 'load');
+        }, 100);
+    }
+
     // Establecer fecha mínima para el campo de fecha final (hoy)
     document.addEventListener('DOMContentLoaded', function() {
         const now = new Date();
@@ -366,7 +372,6 @@
             finalDateInput.min = now.toISOString().slice(0, 16);
         }
 
-        // Establecer fecha de creación actual
         const createdDateInput = document.getElementById('createdDate');
         if (createdDateInput) {
             createdDateInput.value = now.toISOString().slice(0, 16);
@@ -376,9 +381,9 @@
     // Recargar lista después de guardar
     document.body.addEventListener('htmx:afterOnLoad', function(evt) {
         if (evt.detail.target.id === 'task-list') {
-            // Si se guardó una tarea, mostrar nuevamente el formulario de creación
             document.getElementById('create-task-section').style.display = 'flex';
             document.getElementById('edit-form-container').innerHTML = '';
+            document.getElementById('search-results').innerHTML = '';
         }
     });
 </script>

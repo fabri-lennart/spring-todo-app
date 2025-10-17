@@ -9,7 +9,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 
 @Controller
 @RequestMapping("/tasks")
@@ -77,7 +76,7 @@ public class TaskController {
     }
 
     // ==========================
-    // Buscar tareas
+    // Buscar tareas (CORREGIDO)
     // ==========================
     @GetMapping("/search")
     public String searchTasks(@RequestParam(required = false) String name,
@@ -85,7 +84,7 @@ public class TaskController {
                               @RequestParam(required = false) String state,
                               Model model) {
         model.addAttribute("tasks", taskService.search(name, category, state));
-        return "fragments/task-list :: task-list";
+        return "fragments/search-results :: search-results";
     }
 
     // ==========================

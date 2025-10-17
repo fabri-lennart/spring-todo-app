@@ -1,0 +1,63 @@
+<!-- src/main/resources/templates/fragments/search-results.html -->
+<div th:fragment="search-results">
+  <h4>🔎 Resultados de la Búsqueda
+    <span th:text="'(' + ${tasks.size()} + ' tareas encontradas)'"></span>
+  </h4>
+
+  <div th:if="${#lists.isEmpty(tasks)}">
+    <p>❌ No se encontraron tareas con los filtros aplicados.</p>
+    <p>Intenta con otros criterios de búsqueda.</p>
+  </div>
+
+  <div th:unless="${#lists.isEmpty(tasks)}">
+    <div th:each="task : ${tasks}" class="task-item">
+      <div class="task-header">
+        <strong th:text="${task.taskName}">Nombre</strong>
+        <span class="priority" th:text="'Prioridad: ' + ${task.priority}">Prioridad</span>
+      </div>
+
+      <div class="task-details">
+        <p th:text="${task.description}">Descripción</p>
+        <div class="task-meta">
+          <span class="category" th:text="${task.category}">Categoría</span>
+          |
+          <span class="state" th:classappend="'state-' + ${task.state}" th:text="${task.state}">Estado</span>
+          |
+          <span class="dates">
+                        Creado: <span th:text="${#temporals.format(task.createdDate, 'dd/MM/yyyy HH:mm')}"></span>
+                    </span>
+          <span th:if="${task.finalDate}">
+                        | Final: <span th:text="${#temporals.format(task.finalDate, 'dd/MM/yyyy HH:mm')}"></span>
+                    </span>
+        </div>
+      </div>
+
+      <div class="task-actions">
+        <select th:data-task-id="${task.id}"
+                class="state-selector"
+                onchange="updateTaskState(this)"
+                style="width: 150px;">
+          <option th:each="st : ${T(com.todo_app.Enum.State).values()}"
+                  th:value="${st}"
+                  th:text="${st}"
+                  th:selected="${task.state == st}">
+          </option>
+        </select>
+
+        <button class="btn-edit"
+                onclick="editTask([[${task.id}]])">
+          ✏️ Editar
+        </button>
+
+        <button class="btn-delete"
+                th:attr="hx-delete=@{/tasks/delete/{id}(id=${task.id})}"
+                hx-target="#task-list"
+                hx-swap="innerHTML"
+                hx-confirm='¿Estás seguro de que quieres eliminar esta tarea?'
+                onclick="clearSearchResults()">
+          🗑️ Eliminar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
